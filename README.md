@@ -9,11 +9,10 @@ In this tutorial, we'll explore how you can use Algorand through the [js-algoran
 - How to create accounts with the `kmd` client
 
 ## Requirements
-Make sure you have an active installation of the Algorand sandbox to follow this tutorial.
+Make sure you have an active installation of the [Algorand sandbox](https://developer.algorand.org/articles/introducing-sandbox-quick-way-get-started-algorand/) to follow this tutorial. Also, you need the latest [Node and npm version](https://nodejs.org/en/) installed on your machine.
 
 ## Installation
-// add link
-You can clone the starter project from [GitHub](). First, let's make sure we can run the code. Don't forget to install all dependencies by running `npm install`. When that's done, try starting the project with `npm start`. You should see the following message pop up in your terminal output. 
+You can clone the starter project from [GitHub](https://github.com/crypblockcode/algorand-express). First, let's make sure we can run the code. Don't forget to install all dependencies by running `npm install`. When that's done, try starting the project with `npm start`. You should see the following message pop up in your terminal output. 
 
 ```sh
 Example app listening at http://localhost:3000
