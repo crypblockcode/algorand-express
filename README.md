@@ -430,6 +430,17 @@ Lastly, we use the exposed `waitForConfirmation` function to poll the status of 
 
 ![Postman request sample](https://i.ibb.co/R95gTbR/Screenshot-2021-08-25-at-15-51-54.png)
 
+That's it!
+
 # Conclusion
 To conclude this tutorial, here's an overview of all possible endpoints you can query:
-XYZ
+
+- GET localhost:3000/ --> Hello world route
+- GET localhost:3000/transactions/ --> Get latest 10 transactions
+- POST localhost:3000/transactions/faucet **Body: { receiver }** --> Get 1234 microAlgos from faucet account
+- GET localhost:3000/accounts/create --> Create new account
+- GET localhost:3000/accounts/:address --> Get account info
+- GET localhost:3000/accounts/:address?extended --> Get extended account info including details on the assets
+- GET localhost:3000/accounts/:address/transactions --> Get transactions for account
+- GET localhost:3000/assets/:name --> Search assets by name
+
