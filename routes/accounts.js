@@ -74,10 +74,15 @@ router.get("/:address/transactions", async function(req, res) {
     let accountInfo = await client.lookupAccountTransactions(acc).do()
 
     const transactions = accountInfo.transactions.map(tx => {
+        const enc = new TextEncoder();
+        let note = enc.encode(tx.note);
+        const s = Buffer.from(note).toString("utf8");
+
         const transaction = {
             id: tx.id,
             fee: tx.fee,
             note: tx.note,
+            notex: s,
             from: tx.sender,
             type: tx['tx-type']
         }
