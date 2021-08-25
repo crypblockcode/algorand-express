@@ -7,6 +7,7 @@ In this tutorial, we'll explore how you can use Algorand through the [js-algoran
 - How to format responses to improve readability of Algorand data
 - How to query account-related information
 - How to create accounts with the `kmd` client
+- How to create a faucet to fund accounts
 
 ## Requirements
 Make sure you have an active installation of the [Algorand sandbox](https://developer.algorand.org/articles/introducing-sandbox-quick-way-get-started-algorand/) to follow this tutorial. Also, you need the latest [Node and npm version](https://nodejs.org/en/) installed on your machine.
@@ -31,6 +32,10 @@ They will form the basis for creating new endpoints. Therefore, the contents of 
 const express = require('express')
 const app = express()
 const port = 3000
+
+const bodyParser = require("body-parser"); // Needed for parsing POST requests' body
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 const transactions = require('./routes/transactions')
 const assets = require('./routes/assets')
@@ -358,4 +363,73 @@ Got wallet handle: 2f102532da73f7ff.e2ede299fc54f656bcfc1178d026bf72704a2debaa5e
 Created new account: FFGCHJUQV5SKLYYWTL7OV66C234CH3QERYI33FZTPVWJU7LOFBUC4YMERI
 ```
 
-That's it!
+## Step 5: Creating a Faucet to Fund Accounts
+
+Let's look at the code at `routes/transactions.js` to handle the incoming POST request to fund a new account. We've purposefully choosen for a POST request to show you how you can access parameters from the request. Here, we expect users to send a transaction to `http://localhost:3000/transactions/faucet`. With that request, the user should also send a `receiver` address of the account we want to fund. 
+
+Firstly, we are importing the `transactionsHelper` which contains the `waitForConfirmation` function the Algorand documentation recommends using to check if a transaction has been confirmed. To keep the code clean, we've moved this code to a helper file. 
+
+Further, we find the connection details for the Algod client because writing to the blockchain requires the use of the Algod client. We'll also use the Algod client to query the transaction parameters to use for building our payment transaction.
+
+After creating the `algodClient` connection object, you'll find a hard-coded passphrase for the faucet. As a best practice, we recommend using [dotenv](https://www.npmjs.com/package/dotenv) to manage secrets securely. By default, this faucet sends 1234 microAlgos to the `receiver` address. In order to retrieve the passphrase of a well-funded account with the Algorand sandbox, you can use `goal` to export one of the automatically created accounts for your sandbox. Here's how you can do this:
+
+```sh
+./sandbox goal account export -a <address>
+```
+
+The passphrase is used to retrieve the address and secret key for the faucet account to further sign the payment transaction. 
+
+```js
+const transactionsHelper = require("../helpers/transactions")
+
+const algodToken = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+const algodServer = "http://localhost";
+const algodPort = 4001;
+
+let algodClient = new algosdk.Algodv2(algodToken, algodServer, algodPort);
+
+const FAUCET_PASSPHRASE = "boss enemy gift student resource spend garment regret master across gun culture bag sauce pride grace steak general school wheel kiwi cannon upon abstract aisle"
+
+// faucet: send 1234 microALGO tokens to a specific account
+router.post("/faucet", async function (req, res) {
+  const receiver = req.body.receiver
+  const faucetAccount = algosdk.mnemonicToSecretKey(FAUCET_PASSPHRASE);
+
+  let params = await algodClient.getTransactionParams().do();
+  params.flatFee = true;
+  params.fee = 1000;
+
+  let note = algosdk.encodeObj("Faucet");
+  let txn = algosdk.makePaymentTxnWithSuggestedParams(
+    faucetAccount.addr,
+    receiver,
+    1234,
+    undefined,
+    note,
+    params
+  );
+
+  let signedTxn = txn.signTxn(faucetAccount.sk);
+  let txId = txn.txID().toString();
+  console.log("Signed transaction with txID: %s", txId);
+
+  await algodClient.sendRawTransaction(signedTxn).do();
+  await transactionsHelper.waitForConfirmation(algodClient, txId, 5);
+
+  res.send({
+    status: 200,
+    id: txId,
+    from: faucetAccount.addr,
+    to: receiver,
+    amount: 1234
+  })
+})
+```
+
+Lastly, we use the exposed `waitForConfirmation` function to poll the status of the transaction. If everything is correct, we return an object will all information about the faucet transaction. You can try out the request using a tool like Postman. Make sure to add a `body` to the POST request. Here's how the body can look like with its response:
+
+![Postman request sample](https://i.ibb.co/R95gTbR/Screenshot-2021-08-25-at-15-51-54.png)
+
+# Conclusion
+To conclude this tutorial, here's an overview of all possible endpoints you can query:
+XYZ
