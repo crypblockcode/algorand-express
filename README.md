@@ -365,13 +365,13 @@ Created new account: FFGCHJUQV5SKLYYWTL7OV66C234CH3QERYI33FZTPVWJU7LOFBUC4YMERI
 
 ## Step 5: Creating a Faucet to Fund Accounts
 
-Let's look at the code at `routes/transactions.js` to handle the incoming POST request to fund a new account. We've purposefully choosen for a POST request to show you how you can access parameters from the request. Here, we expect users to send a transaction to `http://localhost:3000/transactions/faucet`. With that request, the user should also send a `receiver` address of the account we want to fund. 
+Let's look at the code at `routes/transactions.js` to handle the incoming POST request to fund a new account. We've purposefully chosen for a POST request to show you how you can access parameters from the request. Here, we expect users to send a transaction to `http://localhost:3000/transactions/faucet`. The user should also send a `receiver` address of the account we want to fund with that request.
 
 Firstly, we are importing the `transactionsHelper` which contains the `waitForConfirmation` function the Algorand documentation recommends using to check if a transaction has been confirmed. To keep the code clean, we've moved this code to a helper file. 
 
-Further, we find the connection details for the Algod client because writing to the blockchain requires the use of the Algod client. We'll also use the Algod client to query the transaction parameters to use for building our payment transaction.
+Further, we find the connection details for the Algod client because writing to the blockchain requires the use of the Algod client. We'll also use the Algod client to query the transaction parameters for building our payment transaction.
 
-After creating the `algodClient` connection object, you'll find a hard-coded passphrase for the faucet. As a best practice, we recommend using [dotenv](https://www.npmjs.com/package/dotenv) to manage secrets securely. By default, this faucet sends 1234 microAlgos to the `receiver` address. In order to retrieve the passphrase of a well-funded account with the Algorand sandbox, you can use `goal` to export one of the automatically created accounts for your sandbox. Here's how you can do this:
+After creating the `algodClient` connection object, you'll find a hard-coded passphrase for the faucet. As a best practice, we recommend using [dotenv](https://www.npmjs.com/package/dotenv) to manage secrets securely. By default, this faucet sends 1234 microAlgos to the `receiver` address. To retrieve the passphrase of a well-funded account with the Algorand sandbox, you can use `goal` to export one of the automatically created accounts for your sandbox. Here's how you can do this:
 
 ```sh
 ./sandbox goal account export -a <address>
